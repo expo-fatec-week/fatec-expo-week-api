@@ -29,3 +29,11 @@ async function newPessoa(name, email, tel, ra, cpf, curso, periodo){
   conn.end(); //finalizando a conexão com o banco
 }
 export default {findPessoa, newPessoa}
+
+
+  /*‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\
+  | é preciso atualizar este     | 
+  | service, pois existem        |
+  | funcionalidades que serão    |
+  | alteradas                    |
+  \_____________________________*/
