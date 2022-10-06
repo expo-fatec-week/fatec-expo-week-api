@@ -14,3 +14,6 @@ router.post('/', async (request, response) => {
     response.status(500).json({ message: `Encontramos um erro: ${err}` });
   }
 });
+router.put('/', async (request, response) => {
+  await db.upAgenda()
+});
