@@ -15,5 +15,5 @@ router.post('/', async (request, response) => {
   }
 });
 router.put('/', async (request, response) => {
-  await db.upAgenda()
+  await db.upAgenda(idEvento, idPessoa, validacao, qmValidou, dataHora)
 });
