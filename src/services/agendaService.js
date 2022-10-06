@@ -6,6 +6,6 @@ async function setAgenda(idEvento, idPessoa, validacao){
     const dataAgenda = [idEvento, idPessoa, validacao];
     await conn.query(sql, dataAgenda);
 }
-async function upAgenda(){}
+async function upAgenda(idEvento, idPessoa, validacao, qmValidou, dataHora){}
 
 export default {setAgenda, upAgenda}
