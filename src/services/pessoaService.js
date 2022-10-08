@@ -1,6 +1,6 @@
 import database from '../repository/connection.js';
 
-async function findPessoa(){
+async function findPessoa() {
   const conn = await database.connect(); //iniciando a conexão com o banco
   const sql = 'SELECT * FROM pessoa';
   const [rows] = await conn.query(sql);
@@ -9,11 +9,11 @@ async function findPessoa(){
   | e pegando apenas as informa̲  |
   | ções das 'rows'.             |
   \_____________________________*/
-  
+
   conn.end(); //finalizando a conexão com o banco
   return rows;
 }
-async function newPessoa(name, email, tel, ra, cpf, curso, periodo){
+async function newPessoa(name, email, tel, ra, cpf, curso, periodo) {
   const conn = await database.connect(); //começando a conexão
   const sql = 'call insPAV(?, ?, ?, ?, ?, ?, ?)';
   const dataPessoa = [name, email, tel, ra, cpf, curso, periodo]; //recebendo da variável do front
@@ -28,12 +28,12 @@ async function newPessoa(name, email, tel, ra, cpf, curso, periodo){
 
   conn.end(); //finalizando a conexão com o banco
 }
-export default {findPessoa, newPessoa}
+export default { findPessoa, newPessoa }
 
 
-  /*‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\
-  | é preciso atualizar este     | 
-  | service, pois existem        |
-  | funcionalidades que serão    |
-  | alteradas                    |
-  \_____________________________*/
+/*‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\
+| é preciso atualizar este     | 
+| service, pois existem        |
+| funcionalidades que serão    |
+| alteradas                    |
+\_____________________________*/

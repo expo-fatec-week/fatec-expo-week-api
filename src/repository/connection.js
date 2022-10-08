@@ -7,8 +7,8 @@ async function connect() {
     password: process.env.PASS_DB,
     database: process.env.NAME_DB
   });
-  
+
   return connection;
 }
 
-export default {connect};
+export default { connect };

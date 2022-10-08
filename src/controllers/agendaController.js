@@ -26,7 +26,7 @@ router.put('/', async (request, response) => {
     } else {
       response.status(406/*Not Acceptable*/).json('Não faz tanto tempo que essa pessoa assistiu a um evento, peça que retorne mais tarde!');
     }
-  } catch(err){
+  } catch (err) {
     response.status(500).json(`Houve um erro: ${err}`);
   }
 });
