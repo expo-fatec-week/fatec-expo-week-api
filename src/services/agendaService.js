@@ -22,5 +22,11 @@ async function selectAgenda(idPessoa){
     conn.end();
     return [rows]
 }
+<<<<<<< HEAD
 
 export default {setAgenda, upAgenda, selectAgenda}
+=======
+async function upAgenda(idEvento, idPessoa, validacao, qmValidou, dataHora){}
+
+export default {setAgenda, upAgenda}
+>>>>>>> c144df745816d683f5d18aba3055ca5e75edc0b8
