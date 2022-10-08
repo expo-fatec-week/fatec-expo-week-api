@@ -16,8 +16,6 @@ router.post('/', async (request, response) => {
   }
 });
 router.put('/', async (request, response) => {
-<<<<<<< HEAD
-
   const { idEvento, idPessoa, qmValidou, dataHora } = request.body;
   const { validacao } = 1
   try {
@@ -31,7 +29,4 @@ router.put('/', async (request, response) => {
   } catch(err){
     response.status(500).json(`Houve um erro: ${err}`);
   }
-=======
-  await db.upAgenda(idEvento, idPessoa, validacao, qmValidou, dataHora)
->>>>>>> c144df745816d683f5d18aba3055ca5e75edc0b8
 });
