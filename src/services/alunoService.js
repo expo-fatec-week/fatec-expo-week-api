@@ -1,6 +1,5 @@
 import database from '../repository/connection.js';
 
-
 async function findAluno(ra){
     const conn = await database.connect();
     const sql = 'SELECT * FROM aluno where ra = ?';
