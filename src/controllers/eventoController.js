@@ -1,7 +1,8 @@
-import express, { request, response } from "express";
+import express from 'express';
 import db from "../services/eventoService.js";
 
 const router = express.Router();
+
 router.get('/', async (request, response) => {
     try {
         const results = await db.findEvento();
@@ -15,3 +16,5 @@ router.get('/', async (request, response) => {
         response.status(500).json({ message: `Encontramos um erro: ${err}` });
     }
 });
+
+export default router;
