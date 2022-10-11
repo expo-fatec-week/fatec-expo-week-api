@@ -28,7 +28,16 @@ async function newPessoa(name, email, tel, ra, cpf, curso, periodo) {
 
   conn.end(); //finalizando a conexão com o banco
 }
-export default { findPessoa, newPessoa }
+
+async function findSpecificPerson(cpf) {
+  const conn = await database.connect(); 
+  const sql = 'SELECT * FROM vw_visitante_info WHERE cpf = ? ';
+  const [rows] = await conn.query(sql, cpf);
+  conn.end(); 
+  return rows;
+}
+
+export default { findPessoa, newPessoa, findSpecificPerson }
 
 
 /*‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\
