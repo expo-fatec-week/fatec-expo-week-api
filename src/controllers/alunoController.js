@@ -3,8 +3,8 @@ import db from "../services/alunoService.js";
 
 const router = express.Router();
 
-router.get('/', async (request, response) => {
-  const { ra } = request.body
+router.get('/:ra', async (request, response) => {
+  const { ra } = request.params
   const results = await db.findAluno(ra);
   try {
     if (results.length == 0) {
