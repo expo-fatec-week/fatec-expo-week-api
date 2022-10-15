@@ -3,9 +3,9 @@ import db from "../services/alunoService.js";
 
 const router = express.Router();
 
-router.get('/:ra', async (request, response) => {
-  const { ra } = request.params
-  const results = await db.findAluno(ra);
+router.get('/:ra/:email', async (request, response) => {
+  const { ra, email } = request.params
+  const results = await db.findAluno(ra, email);
   try {
     if (results.length == 0) {
       response.status(204).end();
