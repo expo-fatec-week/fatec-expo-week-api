@@ -2,15 +2,16 @@ import express from "express";
 
 import pessoa from './controllers/pessoaController.js';
 import login from './controllers/loginController.js';
-import eventos from './controllers/eventoController.js'
+import events from './controllers/eventoController.js'
 import student from './controllers/alunoController.js'
+import schedule from './controllers/agendaController.js'
 
 const router = express.Router();
 
 router.use('/user', pessoa);
 router.use('/login', login);
-router.use('/eventos', eventos);
+router.use('/events', events);
 router.use('/student', student);
-
+router.use('/schedule', schedule);
 
 export default router;

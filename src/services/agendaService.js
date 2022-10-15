@@ -1,12 +1,13 @@
 import database from '../repository/connection.js';
 
-async function setAgenda(idEvento, idPessoa, validacao) {
+async function setAgenda(eventId, userId, validacao) {
     const conn = await database.connect();
     const sql = 'insert into agenda(id_evento, id_pessoa, validacao, dtcria) values(?, ?, ?, now());';
-    const dataAgenda = [idEvento, idPessoa, validacao];
+    const dataAgenda = [eventId, userId, validacao];
     await conn.query(sql, dataAgenda);
     conn.end();
 }
+
 async function upAgenda(idEvento, idPessoa, validacao, qmValidou, dataHora) {
     const conn = await database.connect();
     const sql = 'update agenda set validacao = ?, quem_validou = ?, data_hora = now() where id_evento = ? and id_pessoa = ?;';
@@ -14,6 +15,7 @@ async function upAgenda(idEvento, idPessoa, validacao, qmValidou, dataHora) {
     await conn.querry(sql, data_upAgenda);
     conn.end();
 }
+
 async function selectAgenda(idPessoa) {
     const conn = await database.connect();
     const sql = 'select max(data_hora) dataHora from agenda where id_pessoa = ?;';

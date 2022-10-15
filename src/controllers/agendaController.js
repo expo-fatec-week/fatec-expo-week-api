@@ -1,20 +1,23 @@
 import express from 'express';
-import db from '../services/aegndaService.js';
+import db from '../services/agendaService.js';
 
 const router = express.Router();
 
 router.post('/', async (request, response) => {
 
-  const { idEvento, idPessoa } = request.body;
-  const { validacao } = 0;
+  const { eventId, userId } = request.body;
+  const validacao  =  0;
 
   try {
-    await db.setAgenda(idEvento, idPessoa, validacao);
+    eventId.forEach(async (event) => {
+      await db.setAgenda(event, userId, validacao);
+    });
     response.status(201).json('Evento registrado na agenda.');
   } catch (err) {
     response.status(500).json({ message: `Encontramos um erro: ${err}` });
   }
 });
+
 router.put('/', async (request, response) => {
   const { idEvento, idPessoa, qmValidou, dataHora } = request.body;
   const { validacao } = 1
@@ -30,3 +33,5 @@ router.put('/', async (request, response) => {
     response.status(500).json(`Houve um erro: ${err}`);
   }
 });
+
+export default router;
