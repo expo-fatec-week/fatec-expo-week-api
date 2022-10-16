@@ -1,9 +1,9 @@
 import database from '../repository/connection.js';
 
-async function newPessoa(name, email, tel, ra, cpf, curso, periodo) {
+async function newPessoa(name, email, tel, ra, cpf, curso, periodo, aceitaTermo) {
   const conn = await database.connect(); //começando a conexão
-  const sql = 'call insPAV(?, ?, ?, ?, ?, ?, ?)';
-  const dataPessoa = [name, email, tel, ra, cpf, curso, periodo]; //recebendo da variável do front
+  const sql = 'call insPAV(?, ?, ?, ?, ?, ?, ?, ?)';
+  const dataPessoa = [name, email, tel, ra, cpf, curso, periodo, aceitaTermo]; //recebendo da variável do front
 
   await conn.query(sql, dataPessoa);
   /*‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\
@@ -17,10 +17,10 @@ async function newPessoa(name, email, tel, ra, cpf, curso, periodo) {
 }
 
 async function findSpecificPerson(cpf) {
-  const conn = await database.connect(); 
+  const conn = await database.connect();
   const sql = 'SELECT * FROM vw_visitante_info WHERE cpf = ? ';
   const [rows] = await conn.query(sql, cpf);
-  conn.end(); 
+  conn.end();
   return rows;
 }
 
