@@ -3,9 +3,11 @@ import db from "../services/checkoutService.js";
 
 const router = express.Router();
 
-router.get('/', async (request, response) => {
+router.get('/:eventId', async (request, response) => {
 
-  const results = await db.findEventCheckout(7);
+  const { eventId } = request.params;
+
+  const results = await db.findEventCheckout(eventId);
 
   try {
     if (results.length == 0) {

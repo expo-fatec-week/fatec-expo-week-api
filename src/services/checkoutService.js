@@ -1,9 +1,9 @@
 import database from '../repository/connection.js';
 
-async function findEventCheckout(code) {
+async function findEventCheckout(eventId) {
   const conn = await database.connect();
   const sql = 'SELECT * FROM vw_valida_estande WHERE id_evento = ? AND validacao = 0';
-  const dataEvent = [code];
+  const dataEvent = [eventId];
   const [rows] = await conn.query(sql, dataEvent);
   conn.end();
   return rows;
