@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get('/', async (request, response) => {
   try {
-    const results = await db.findPessoa();
+    const results = await db.findPerson();
 
     if (results.length == 0) {
       response.status(204).end();
@@ -44,7 +44,7 @@ router.post('/', async (request, response) => {
   try {
     if (!ra) ra = 0;
     if (!aceitaTermo) return response.status(400).json({ msg: 'Aceite o Termo de Uso para prosseguirmos com o seu cadastro.' });
-    await db.newPessoa(name, email, tel, ra, cpf, curso, periodo);
+    await db.newPessoa(name.toUpperCase(), email, tel, ra, cpf, curso, periodo);
     response.status(201).json({ msg: `Bem vindo à Fatec Expo Week ${name}. Aproveite o Evento 😄` });
   } catch (err) {
     response.status(500).json({ message: `Encontramos um erro: ${err}` });

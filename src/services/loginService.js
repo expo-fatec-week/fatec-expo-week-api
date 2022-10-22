@@ -1,10 +1,10 @@
 import database from '../repository/connection.js';
 
-async function login(userName, password) {
+async function login(user, password) {
   const conn = await database.connect();
 
-  const sql = 'SELECT * FROM login WHERE id_login = ? AND senha = ?;';
-  const dataLogin = [userName, password];
+  const sql = 'SELECT * FROM login WHERE usuario = ? AND senha = ?;';
+  const dataLogin = [user, password];
   const [rows] = await conn.query(sql, dataLogin);
   conn.end();
   return rows;

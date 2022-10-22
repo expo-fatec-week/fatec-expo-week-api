@@ -24,7 +24,15 @@ async function findSpecificPerson(cpf) {
   return rows;
 }
 
-export default { newPessoa, findSpecificPerson }
+async function findPerson(cpf) {
+  const conn = await database.connect(); 
+  const sql = 'SELECT * FROM pessoa ';
+  const [rows] = await conn.query(sql, cpf);
+  conn.end(); 
+  return rows;
+}
+
+export default { newPessoa, findSpecificPerson, findPerson }
 
 
 /*‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\

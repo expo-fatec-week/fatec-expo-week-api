@@ -1,10 +1,10 @@
 import jwt from 'jsonwebtoken';
 
-function generateToken(idUser, userName) {
+function generateToken(user, eventId) {
 
   const secret = process.env.SECRET_JWT;
 
-  return jwt.sign({ infoUser: { idUser, userName } }, secret, { expiresIn: 60 * 60 * 24 });
+  return jwt.sign({ user, eventId }, secret, { expiresIn: 60 * 60 * 5 });
 }
 
 export { generateToken };
