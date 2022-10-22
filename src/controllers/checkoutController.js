@@ -6,10 +6,9 @@ const router = express.Router();
 router.get('/:eventId', async (request, response) => {
 
   const { eventId } = request.params;
-
-  const results = await db.findEventCheckout(eventId);
-
+  
   try {
+    const results = await db.findEventCheckout(eventId);
     if (results.length == 0) {
       response.status(204).end();
     } else {
