@@ -35,7 +35,7 @@ async function confirmPresence(id_pessoa, id_evento, cod_validacao) {
             'update agenda set validacao = ?, quem_validou = ?, data_hora = now() where id_evento = ? and id_pessoa = ?;', updateEvent
         );
     }
-    if (agenda.length === 0) return 'Você se inscreveu nesse evento.';
+    if (agenda.length === 0) return 'Você não se inscreveu nesse evento.';
     if (agenda[0].validacao === 1) return 'Sua presença já esta confirmada.';
     if (evento[0].cod_verificacao !== cod_validacao) return 'Código de validação não confere com o código gerado para o evento.';
     conn.end();
