@@ -37,12 +37,13 @@ router.get('/:cpf', async (request, response) => {
 });
 
 router.post('/', async (request, response) => {
-  let { name, email, tel, ra, cpf, curso, periodo } = request.body;
+  let { name, email, tel, ra, cpf, curso, periodo, aceitaTermo } = request.body;
 
   if (cpf) cpf = cpf.match(/\d/g).join("");
 
   try {
     if (!ra) ra = 0;
+    if (!aceitaTermo) return response.status(400).json({ msg: 'Aceite o Termo de Uso para prosseguirmos com o seu cadastro.' });
     await db.newPessoa(name.toUpperCase(), email, tel, ra, cpf, curso, periodo);
     response.status(201).json({ msg: `Bem vindo à Fatec Expo Week ${name}. Aproveite o Evento 😄` });
   } catch (err) {
