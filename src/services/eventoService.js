@@ -1,11 +1,11 @@
 import database from '../repository/connection.js';
 
-async function findEvento() {
+async function findEvent(userId) {
     const conn = await database.connect();
-    const sql = 'select * from vw_exibe_eventos';
-    const [rows] = await conn.query(sql);
+    const sql = 'select * from vw_eventos_disponiveis';
+    const [rows] = await conn.query(sql, userId);
     conn.end();
     return rows;
 }
 
-export default { findEvento }
+export default { findEvent }

@@ -12,7 +12,7 @@ async function upAgenda(idEvento, idPessoa, validacao, qmValidou, dataHora) {
     const conn = await database.connect();
     const sql = 'update agenda set validacao = ?, quem_validou = ?, data_hora = now() where id_evento = ? and id_pessoa = ?;';
     const data_upAgenda = [validacao, qmValidou, dataHora, idEvento, idPessoa];
-    await conn.querry(sql, data_upAgenda);
+    await conn.query(sql, data_upAgenda);
     conn.end();
 }
 
@@ -24,4 +24,13 @@ async function selectAgenda(idPessoa) {
     conn.end();
     return [rows]
 }
-export default { setAgenda, upAgenda, selectAgenda }
+
+async function findEvent(userId) {
+    const conn = await database.connect();
+    const sql = `select * from vw_meus_eventos where id_pessoa = ?`;
+    const [rows] = await conn.query(sql, userId);
+    conn.end();
+    return rows;
+}
+
+export default { setAgenda, upAgenda, selectAgenda, findEvent }

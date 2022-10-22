@@ -22,11 +22,11 @@ router.get('/:eventId', async (request, response) => {
 
 router.put('/', async (request, response) => {
 
-  const {code, person} = request.body;
+  const {validatedBy, code, person} = request.body;
 
   try {
     person.forEach(async (idPerson) => {
-      await db.confirmEventCheckout(code, idPerson);
+      await db.confirmEventCheckout(validatedBy, code, idPerson);
     });
     response.status(200).json({message: 'Obrigado por sua participação'});
   } catch (err) {

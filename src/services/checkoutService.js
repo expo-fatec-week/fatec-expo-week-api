@@ -9,10 +9,10 @@ async function findEventCheckout(eventId) {
   return rows;
 }
 
-async function confirmEventCheckout(code, idPerson) {
+async function confirmEventCheckout(validatedBy, code, idPerson) {
   const conn = await database.connect();
-  const sql = `UPDATE agenda SET validacao = 1, data_hora = now(), quem_validou = 'teste' WHERE id_evento = ? AND id_pessoa = ?`;
-  const dataConfirm = [code, idPerson];
+  const sql = `UPDATE agenda SET validacao = 1, data_hora = now(), quem_validou = ? WHERE id_evento = ? AND id_pessoa = ?`;
+  const dataConfirm = [validatedBy, code, idPerson];
   await conn.query(sql, dataConfirm);
   conn.end();
 }
