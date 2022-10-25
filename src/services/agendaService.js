@@ -33,4 +33,14 @@ async function findEvent(userId) {
     return rows;
 }
 
-export default { setAgenda, upAgenda, selectAgenda, findEvent }
+async function listViewedEvents(userId) {
+    const conn = await database.connect();
+    const sql = `SELECT agenda.id_evento, tipo, descricao, dt_verificacao, data_hora 
+    FROM agenda INNER JOIN evento ON agenda.id_evento = evento.id_evento 
+    WHERE id_pessoa = ? AND validacao = 1;`;
+    const [rows] = await conn.query(sql, userId);
+    conn.end();
+    return rows;
+}
+
+export default { setAgenda, upAgenda, selectAgenda, findEvent, listViewedEvents }
