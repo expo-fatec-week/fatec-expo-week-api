@@ -34,16 +34,20 @@ async function confirmPresence(id_pessoa, id_evento, cod_validacao) {
     const conn = await database.connect();
     const [evento] = await conn.query(`SELECT * FROM evento WHERE id_evento = ${id_evento};`);
     const [agenda] = await conn.query(`SELECT * FROM agenda WHERE id_evento = ${id_evento} AND id_pessoa = ${id_pessoa};`);
-    if (agenda.length > 0 && evento[0].cod_verificacao === cod_validacao) {
-        const updateEvent = [1, id_pessoa, id_evento, id_pessoa];
-        await conn.query(
-            'update agenda set validacao = ?, quem_validou = ?, data_hora = now() where id_evento = ? and id_pessoa = ?;', updateEvent
-        );
-    }
+    const [inTime] = await conn.query(`CALL verifica_tempo(${id_evento})`);
+    conn.end();
+
     if (agenda.length === 0) return 'Você não se inscreveu nesse evento.';
     if (agenda[0].validacao === 1) return 'Sua presença já está confirmada.';
     if (evento[0].cod_verificacao !== cod_validacao) return 'Código de validação não confere com o código gerado para o evento.';
-    conn.end();
+    if (inTime[0][0]['@flag'] === 0) return 'Não foi possível confirmar a presença no evento, pois o período de validação acabou.';
+
+    const newConn = await database.connect();
+    const updateEvent = [1, id_pessoa, id_evento, id_pessoa];
+    await newConn.query(
+        'update agenda set validacao = ?, quem_validou = ?, data_hora = now() where id_evento = ? and id_pessoa = ?;', updateEvent
+    );
+    newConn.end();
     return 'Presença confirmada com sucesso.';
 }
 
