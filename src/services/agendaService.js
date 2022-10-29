@@ -35,7 +35,7 @@ async function findEvent(userId) {
 
 async function listViewedEvents(userId) {
     const conn = await database.connect();
-    const sql = `SELECT agenda.id_evento, tipo, descricao, dt_verificacao, data_hora 
+    const sql = `SELECT agenda.id_evento, tipo, descricao, data_hora as dt_verificacao, data_hora 
     FROM agenda INNER JOIN evento ON agenda.id_evento = evento.id_evento 
     WHERE id_pessoa = ? AND validacao = 1;`;
     const [rows] = await conn.query(sql, userId);

@@ -51,7 +51,7 @@ router.get('/:userId', async (request, response) => {
   }
 });
 
-router.get('/:userId/viewed-events', async (request, response) => {
+router.get('/viewed-events/:userId', async (request, response) => {
 
   const { userId } = request.params;
 
