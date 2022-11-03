@@ -5,7 +5,7 @@ async function findEvent(userId) {
     const sql = `SELECT a.id_evento, a.descricao, a.tipo, a.data_evento, b.id_pessoa from evento a LEFT JOIN agenda b ON a.id_evento = b.id_evento WHERE data_evento > now() - interval 4 hour AND (dayofyear(data_evento) = dayofyear(now())) AND a.id_evento NOT IN(SELECT g.id_evento 
                            FROM agenda g, evento v 
 						   WHERE g.id_evento = v.id_evento 
-                             AND g.id_pessoa = ?) GROUP BY id_evento;`;
+                             AND g.id_pessoa = ?) AND a.estatus <> 'I' GROUP BY id_evento;`;
     const [rows] = await conn.query(sql, userId);
     conn.end();
     return rows;
