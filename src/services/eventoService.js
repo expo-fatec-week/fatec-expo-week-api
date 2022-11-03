@@ -2,7 +2,7 @@ import database from '../repository/connection.js';
 
 async function findEvent(userId) {
     const conn = await database.connect();
-    const sql = `SELECT a.id_evento, a.descricao, a.tipo, a.data_evento, b.id_pessoa from evento a LEFT JOIN agenda b ON a.id_evento = b.id_evento WHERE data_evento > now() AND (dayofyear(data_evento) = dayofyear(now())) AND a.id_evento NOT IN(SELECT g.id_evento 
+    const sql = `SELECT a.id_evento, a.descricao, a.tipo, a.data_evento, b.id_pessoa from evento a LEFT JOIN agenda b ON a.id_evento = b.id_evento WHERE data_evento > now() - interval 4 hour AND (dayofyear(data_evento) = dayofyear(now())) AND a.id_evento NOT IN(SELECT g.id_evento 
                            FROM agenda g, evento v 
 						   WHERE g.id_evento = v.id_evento 
                              AND g.id_pessoa = ?) GROUP BY id_evento;`;
