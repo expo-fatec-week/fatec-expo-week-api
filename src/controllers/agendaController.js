@@ -9,9 +9,9 @@ router.post('/', async (request, response) => {
   const validacao = 0;
 
   try {
-    eventId.forEach(async (event) => {
-      await db.setAgenda(event, userId, validacao);
-    });
+    // eventId.forEach(async (event) => {
+      await db.setAgenda(eventId[0], userId, validacao);
+    // });
     response.status(201).json('Evento registrado na agenda.');
   } catch (err) {
     response.status(500).json({ message: `Encontramos um erro: ${err}` });
