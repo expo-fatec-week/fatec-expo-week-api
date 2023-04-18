@@ -1,3 +1,4 @@
+require('dotenv').config();
 import db from '../database/database';
 import passport from 'passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
@@ -20,7 +21,7 @@ passport.use(
             if (_payload.ra) {
                 user = await db.findFirst(conn, 'SELECT * FROM vw_aluno_info WHERE ra = ? AND email = ?', [_payload.ra, _payload.email]);
             } else {
-                user = await db.findFirst(conn, 'SELECT * FROM vw_aluno_info WHERE id_pessoa = ? AND email = ?', [_payload.id_pessoa, _payload.email])
+                user = await db.findFirst(conn, 'SELECT * FROM vw_visitante_info WHERE id_pessoa = ? AND email = ?', [_payload.personId, _payload.email])
             }
 
             verifyUser(user);
