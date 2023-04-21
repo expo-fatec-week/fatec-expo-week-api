@@ -13,6 +13,15 @@ class StudentController {
         }
     };
 
+    static async listStudents(req: Request, res: Response) {
+        try {
+            const students = await StudentService.listStudents();
+            return res.status(200).json(students);
+        } catch (error) {
+            return res.status(500).json(error);
+        }
+    }
+
 }
 
 export default StudentController;

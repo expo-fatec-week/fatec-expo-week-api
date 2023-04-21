@@ -1,5 +1,6 @@
 import db from '../config/database/database';
 import { ResponseEvent } from '../models/Event';
+import { Student } from '../models/Student';
 
 class StudentService {
 
@@ -8,6 +9,13 @@ class StudentService {
         const events: ResponseEvent[] = await db.findMany(conn, 'SELECT * FROM vw_meus_eventos WHERE id_pessoa = ?', [personId]);
         conn.end();
         return events;
+    }
+
+    static async listStudents() {
+        const conn = await db.connect();
+        const students: Student[] = await db.findMany(conn, 'SELECT * FROM etecdeem_fatecweek.vw_aluno_info;');
+        conn.end();
+        return students;
     }
 
 }
