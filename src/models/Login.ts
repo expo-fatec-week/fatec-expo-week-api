@@ -16,6 +16,7 @@ export interface QueryLoginStudent {
     telefone: string;
     email: string;
     tipo: string;
+    responsavel_evento: number;
 }
 
 export interface QueryLoginVisitor {

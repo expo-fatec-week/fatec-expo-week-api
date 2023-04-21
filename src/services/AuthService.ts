@@ -18,6 +18,7 @@ class AuthService {
                 ra: user.ra,
                 userType: user.tipo,
                 personId: user.id_pessoa,
+                respEventId: user.responsavel_evento,
                 iat: now,
                 exp: now + (60 * 240),
                 type: 'Bearer',

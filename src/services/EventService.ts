@@ -93,24 +93,24 @@ class EventService {
                 const { minLastParticipation } = await db.findFirst(
                     conn,
                     `SELECT TIMESTAMPDIFF (
-                    MINUTE, ( SELECT data_validacao 
-                    FROM etecdeem_fatecweek.participacoes 
-                    WHERE id_pessoa_participante = ${requestValidateExhibit.id_pessoa_participante}
-                    ORDER BY data_validacao DESC LIMIT 1
-                    )
-                    + INTERVAL TIMESTAMPDIFF( HOUR, (
-                    SELECT data_validacao 
-                    FROM etecdeem_fatecweek.participacoes 
-                    WHERE id_pessoa_participante = ${requestValidateExhibit.id_pessoa_participante}
-                    ORDER BY data_validacao DESC 
-                    LIMIT 1
-                    ),
-                    (
-                     SELECT current_timestamp()
-                    )) HOUR, (SELECT current_timestamp() LIMIT 1)) AS minLastParticipation
-                    FROM participacoes LIMIT 1;`,
+                        MINUTE, ( SELECT data_validacao 
+                        FROM etecdeem_fatecweek.participacoes 
+                        WHERE id_pessoa_participante = ${requestValidateExhibit.id_pessoa_participante}
+                        ORDER BY data_validacao DESC LIMIT 1
+                        )
+                        + INTERVAL TIMESTAMPDIFF( HOUR, (
+                        SELECT data_validacao 
+                        FROM etecdeem_fatecweek.participacoes 
+                        WHERE id_pessoa_participante = ${requestValidateExhibit.id_pessoa_participante}
+                        ORDER BY data_validacao DESC 
+                        LIMIT 1
+                        ),
+                        (
+                         SELECT current_timestamp()
+                        )) HOUR, (SELECT current_timestamp() LIMIT 1)) AS minLastParticipation
+                        FROM participacoes LIMIT 1;`,
                     []);
-                if (minLastParticipation < minForNext) {
+                if (minLastParticipation !== null && minLastParticipation <= minForNext) {
                     return { status: 401, message: 'Não faz tanto tempo que essa pessoa assistiu a um evento, peça que retorne mais tarde!' }
                 } else {
                     await conn.query(
