@@ -21,3 +21,10 @@ export interface RequestValidateExhibit {
     id_pessoa_validacao: number;
     id_evento: number;
 }
+
+export interface ResponseEventLecture {
+    descricao: string;
+    nome: string;
+    dt_verificacao: Date;
+    cod_verificacao?: string;
+}

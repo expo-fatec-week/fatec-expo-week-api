@@ -11,6 +11,19 @@ class EventService {
         return events;
     }
 
+    static async listByResponsability(personId: string) {
+        const conn = await db.connect();
+        const events: ResponseEvent[] = await db.findMany(
+            conn,
+            `SELECT e.descricao, e.cod_verificacao, e.dt_verificacao, p.nome as validado_por
+            FROM evento e
+            JOIN aluno a ON e.id_evento = a.responsavel_evento
+            JOIN pessoa p ON a.id_pessoa = p.id_pessoa
+            WHERE a.id_pessoa = ${personId};`);
+        conn.end();
+        return events;
+    }
+
     static async generateCode(requestGenerateCode: RequestGenerateCode) {
         const { id_pessoa, id_evento } = requestGenerateCode;
         const conn = await db.connect();

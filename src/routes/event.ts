@@ -9,6 +9,10 @@ event.route('/event')
     .all(authStrategy())
     .get(EventController.list);
 
+event.route('/event/responsability/:personId')
+    .all(authStrategy())
+    .get(EventController.listByResponsability);
+
 event.route('/event/lecture/generate-code')
     .all(authStrategy())
     .post(Session.organizer(EventController.generateCode));
