@@ -33,7 +33,6 @@ class EventController {
             if (!requestValidateLecture.id_pessoa || !requestValidateLecture.cod_validacao) {
                 return res.status(400).json({ message: 'Faltam informações para validar o evento.' });
             }
-
             const response: any = await EventService.validateLecture(requestValidateLecture);
             return res.status(response.status).json(response.message);
         } catch (error) {

@@ -47,22 +47,22 @@ class EventService {
             const minForNext = 180;
             const eventByValidateCode = await db.findFirst(
                 conn,
-                'SELECT id_evento FROM evento WHERE tipo = palestra AND cod_verificacao = ?',
-                [requestValidateLecture.cod_validacao]
+                'SELECT id_evento FROM evento WHERE tipo = ? AND cod_verificacao = ?',
+                ['palestra', requestValidateLecture.cod_validacao]
             );
-            if (eventByValidateCode !== null) {
+            if (eventByValidateCode) {
                 const participacao: Participacao = await db.findFirst(
                     conn,
                     'SELECT * FROM participacoes WHERE id_evento = ? AND id_pessoa_participante = ?;',
-                    [eventByValidateCode, requestValidateLecture.id_pessoa]
+                    [eventByValidateCode.id_evento, requestValidateLecture.id_pessoa]
                 );
-                if (participacao.data_validacao) {
-                    return { status: 200, message: 'Sua presença já está confirmada.' };
+                if (participacao?.data_validacao) {
+                    return { status: 200, message: 'Sua presença já está confirmada para este evento.' };
                 } else {
                     const inTime = await db.findFirst(
                         conn,
                         'CALL verifica_tempo(?)',
-                        [eventByValidateCode]
+                        [eventByValidateCode.id_evento]
                     );
                     if (inTime[0]['@flag'] === 1) {
                         const isAllowed = await validationAllowed(conn, requestValidateLecture.id_pessoa, minForNext)
@@ -74,9 +74,9 @@ class EventService {
                             await conn.query(
                                 `INSERT INTO participacoes (id_evento, id_pessoa_participante, id_pessoa_validacao, data_validacao) 
                             VALUES (
-                                id_evento: ${eventByValidateCode}, 
-                                id_pessoa_participante: ${requestValidateLecture.id_pessoa}, 
-                                id_pessoa_validacao: ${requestValidateLecture.id_pessoa}, 
+                                ${eventByValidateCode.id_evento}, 
+                                ${requestValidateLecture.id_pessoa}, 
+                                ${requestValidateLecture.id_pessoa}, 
                                 now());`
                             );
                             return { status: 200, message: 'Presença confirmada com sucesso.' }
