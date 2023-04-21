@@ -8,7 +8,7 @@ const student = Router();
 
 student.route('/student')
     .all(authStrategy())
-    .get(Session.exhibitor(StudentController.listStudents));
+    .get(Session.exhibitor(StudentController.listStudentsAndVisitors));
 
 student.route('/student/confirmed-events/:personId')
     .get(StudentController.listEvents);

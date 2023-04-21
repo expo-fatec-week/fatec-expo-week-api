@@ -11,9 +11,9 @@ class StudentService {
         return events;
     }
 
-    static async listStudents() {
+    static async listStudentsAndVisitors() {
         const conn = await db.connect();
-        const students: Student[] = await db.findMany(conn, 'SELECT * FROM etecdeem_fatecweek.vw_aluno_info;');
+        const students: Student[] = await db.findMany(conn, 'SELECT id_pessoa, nome FROM pessoa;');
         conn.end();
         return students;
     }

@@ -34,8 +34,8 @@ class EventController {
                 return res.status(400).json({ message: 'Faltam informações para validar o evento.' });
             }
 
-            const response = await EventService.validadeLecture(requestValidateLecture);
-            return res.status(201).json(response);
+            const response: any = await EventService.validateLecture(requestValidateLecture);
+            return res.status(response.status).json(response.message);
         } catch (error) {
             return res.status(500).json(error);
         }
@@ -50,8 +50,8 @@ class EventController {
                 || !requestValidateExhibit.id_pessoa_validacao) {
                 return res.status(400).json({ message: 'Faltam informações para validar o evento.' });
             }
-            const response = await EventService.validadeExhibit(requestValidateExhibit);
-            return res.status(201).json(response);
+            const response: any = await EventService.validateExhibit(requestValidateExhibit);
+            return res.status(response.status).json(response.message);
         } catch (error) {
             return res.status(500).json(error);
         }

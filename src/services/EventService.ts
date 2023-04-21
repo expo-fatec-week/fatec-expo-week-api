@@ -32,16 +32,28 @@ class EventService {
         }
     }
 
-    static async validadeLecture(requestValidateLecture: RequestValidateLecture) {
+    static async validateLecture(requestValidateLecture: RequestValidateLecture) {
         const conn = await db.connect();
         try {
-            const codValidacaoEvento: string = await db.findFirst(conn, 'SELECT cod_validacao FROM evento WHERE id_evento = ?;', [requestValidateLecture.id_evento]);
-            const participacao: Participacao = await db.findFirst(conn, 'SELECT * FROM participacoes WHERE id_evento = ? AND id_pessoa_participante = ?;', [requestValidateLecture.id_evento, requestValidateLecture.id_pessoa])
-            const inTime = await db.findFirst(conn, 'CALL verifica_tempo(?)', [requestValidateLecture.id_evento]);
+            const codValidacaoEvento: string = await db.findFirst(
+                conn,
+                'SELECT cod_validacao FROM evento WHERE id_evento = ?;',
+                [requestValidateLecture.id_evento]
+            );
+            const participacao: Participacao = await db.findFirst(
+                conn,
+                'SELECT * FROM participacoes WHERE id_evento = ? AND id_pessoa_participante = ?;',
+                [requestValidateLecture.id_evento, requestValidateLecture.id_pessoa]
+            );
+            const inTime = await db.findFirst(
+                conn,
+                'CALL verifica_tempo(?)',
+                [requestValidateLecture.id_evento]
+            );
 
-            if (participacao.data_validacao) return 'Sua presença já está confirmada.';
-            if (codValidacaoEvento !== requestValidateLecture.cod_validacao) return 'Código de validação não confere com o código gerado para o evento.';
-            if (inTime[0]['@flag'] === 0) return 'Não foi possível confirmar a presença no evento, pois o período de validação acabou.';
+            if (participacao.data_validacao) return { status: 200, message: 'Sua presença já está confirmada.' };
+            if (codValidacaoEvento !== requestValidateLecture.cod_validacao) return { status: 401, message: 'Código de validação não confere com o código gerado para o evento.' };
+            if (inTime[0]['@flag'] === 0) return { status: 401, message: 'Não foi possível confirmar a presença no evento, pois o período de validação acabou.' };
 
             await conn.query(
                 `INSERT INTO participacoes (id_evento, id_pessoa_participante, id_pessoa_validacao, data_validacao) 
@@ -51,7 +63,7 @@ class EventService {
                     id_pessoa_validacao: ${requestValidateLecture.id_pessoa}, 
                     now());`
             );
-            return 'Presença confirmada com sucesso.';
+            return { status: 200, message: 'Presença confirmada com sucesso.' }
         } catch (error) {
             return error;
         } finally {
@@ -59,35 +71,61 @@ class EventService {
         }
     }
 
-    static async validadeExhibit(requestValidateExhibit: RequestValidateExhibit) {
+    static async validateExhibit(requestValidateExhibit: RequestValidateExhibit) {
         const conn = await db.connect();
         try {
             const minForNext = 15;
-            const participations: Participacao[] = await db.findMany(conn, 'SELECT * FROM participacoes WHERE id_pessoa_participante = ? ORDER BY data_validacao DESC;', [requestValidateExhibit.id_pessoa_participante])
-
-            if (participations) {
-                participations.forEach((participation) => {
-                    if (participation.id_evento === requestValidateExhibit.id_evento) {
-                        return 'Sua presença já está confirmada.';
-                    }
-                })
-
-                const inTime: number = await db.executeQuery(conn, 'select * FROM vw_time_difference_last_event;');
-
-                if (inTime < minForNext) {
-                    return 'Não faz tanto tempo que essa pessoa assistiu a um evento, peça que retorne mais tarde!';
-                }
-            }
-
-            await conn.query(
-                `INSERT INTO participacoes (id_evento, id_pessoa_participante, id_pessoa_validacao, data_validacao) 
-                VALUES (
-                    id_evento: ${requestValidateExhibit.id_evento}, 
-                    id_pessoa_participante: ${requestValidateExhibit.id_pessoa_participante}, 
-                    id_pessoa_validacao: ${requestValidateExhibit.id_pessoa_validacao}, 
-                    now());`
+            const isResponsable = await db.findFirst(
+                conn,
+                `SELECT id_pessoa, responsavel_evento FROM aluno WHERE responsavel_evento = ? AND id_pessoa = ?;`,
+                [requestValidateExhibit.id_evento, requestValidateExhibit.id_pessoa_validacao]
             );
-            return 'Presença confirmada com sucesso.';
+            const participation: Participacao = await db.findFirst(
+                conn,
+                'SELECT * FROM participacoes WHERE id_pessoa_participante = ? AND id_evento = ?;',
+                [requestValidateExhibit.id_pessoa_participante, requestValidateExhibit.id_evento]
+            );
+
+            if (isResponsable) {
+                if (participation) {
+                    return { status: 200, message: 'Sua presença já está confirmada.' };
+                }
+                const { minLastParticipation } = await db.findFirst(
+                    conn,
+                    `SELECT TIMESTAMPDIFF (
+                    MINUTE, ( SELECT data_validacao 
+                    FROM etecdeem_fatecweek.participacoes 
+                    WHERE id_pessoa_participante = ${requestValidateExhibit.id_pessoa_participante}
+                    ORDER BY data_validacao DESC LIMIT 1
+                    )
+                    + INTERVAL TIMESTAMPDIFF( HOUR, (
+                    SELECT data_validacao 
+                    FROM etecdeem_fatecweek.participacoes 
+                    WHERE id_pessoa_participante = ${requestValidateExhibit.id_pessoa_participante}
+                    ORDER BY data_validacao DESC 
+                    LIMIT 1
+                    ),
+                    (
+                     SELECT current_timestamp()
+                    )) HOUR, (SELECT current_timestamp() LIMIT 1)) AS minLastParticipation
+                    FROM participacoes LIMIT 1;`,
+                    []);
+                if (minLastParticipation < minForNext) {
+                    return { status: 401, message: 'Não faz tanto tempo que essa pessoa assistiu a um evento, peça que retorne mais tarde!' }
+                } else {
+                    await conn.query(
+                        `INSERT INTO participacoes (id_evento, id_pessoa_participante, id_pessoa_validacao, data_validacao) 
+                    VALUES (
+                        ${requestValidateExhibit.id_evento}, 
+                        ${requestValidateExhibit.id_pessoa_participante}, 
+                        ${requestValidateExhibit.id_pessoa_validacao}, 
+                        now());`
+                    );
+                    return { status: 200, message: 'Presença confirmada com sucesso.' };
+                }
+            } else {
+                return { status: 401, message: 'Você não é responsável por este evento.' };
+            }
         } catch (error) {
             return error;
         } finally {
