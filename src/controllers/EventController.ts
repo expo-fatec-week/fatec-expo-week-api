@@ -16,9 +16,11 @@ class EventController {
     static async generateCode(req: Request, res: Response) {
         const requestGenerateCode: RequestGenerateCode = req.body;
         try {
-            if (!requestGenerateCode.id_evento || !requestGenerateCode.id_pessoa) return res.status(400).json({ message: 'Faltam informações para gerar o codigo de validação do evento.' });
-            const code = await EventService.generateCode(requestGenerateCode);
-            return res.status(201).json(code);
+            if (!requestGenerateCode.id_evento || !requestGenerateCode.id_pessoa) {
+                return res.status(400).json({ message: 'Faltam informações para gerar o codigo de validação do evento.' });
+            }
+            const response: any = await EventService.generateCode(requestGenerateCode);
+            return res.status(response.status).json(response.message);
         } catch (error) {
             return res.status(500).json(error);
         }
@@ -28,9 +30,7 @@ class EventController {
     static async validadeLecture(req: Request, res: Response) {
         const requestValidateLecture: RequestValidateLecture = req.body;
         try {
-            if (!requestValidateLecture.id_evento
-                || !requestValidateLecture.id_pessoa
-                || !requestValidateLecture.cod_validacao) {
+            if (!requestValidateLecture.id_pessoa || !requestValidateLecture.cod_validacao) {
                 return res.status(400).json({ message: 'Faltam informações para validar o evento.' });
             }
 

@@ -7,11 +7,12 @@ export interface ResponseEvent {
 }
 
 export interface RequestGenerateCode {
-    id_pessoa: string;
-    id_evento: string;
+    id_pessoa: number;
+    id_evento: number;
 }
 
-export interface RequestValidateLecture extends RequestGenerateCode {
+export interface RequestValidateLecture {
+    id_pessoa: number;
     cod_validacao: string;
 }
 
