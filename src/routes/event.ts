@@ -7,7 +7,7 @@ const event = Router();
 
 event.route('/event')
     .all(authStrategy())
-    .get(EventController.list);
+    .get(EventController.listOfToday);
 
 event.route('/event/responsability/:personId')
     .all(authStrategy())
