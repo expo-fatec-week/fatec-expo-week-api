@@ -11,6 +11,14 @@ class EventService {
         return events;
     }
 
+    static async listOfToday() {
+        const today: string = new Date().toISOString().substring(0, 10);
+        const conn = await db.connect();
+        const events: ResponseEvent[] = await db.findMany(conn, `SELECT * FROM evento WHERE data_evento BETWEEN '${today} 00:00:00' AND '${today} 23:59:59'`);
+        conn.end();
+        return events;
+    }
+
     static async listByResponsability(personId: string) {
         const conn = await db.connect();
         const events: ResponseEvent[] = await db.findMany(
