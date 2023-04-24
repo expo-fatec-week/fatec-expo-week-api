@@ -6,7 +6,7 @@ class StudentService {
 
     static async listEvents(personId: string) {
         const conn = await db.connect();
-        const events: ResponseEvent[] = await db.findMany(conn, 'SELECT * FROM vw_meus_eventos WHERE id_pessoa = ?', [personId]);
+        const events: ResponseEvent[] = await db.findMany(conn, 'SELECT * FROM vw_meus_eventos WHERE id_pessoa = ? ORDER BY data_validacao DESC', [personId]);
         conn.end();
         return events;
     }

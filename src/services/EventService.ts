@@ -15,7 +15,7 @@ class EventService {
         const conn = await db.connect();
         const events: ResponseEvent[] = await db.findMany(
             conn,
-            `SELECT e.descricao, e.cod_verificacao, e.dt_verificacao, p.nome as validado_por
+            `SELECT e.*, p.nome as validado_por
             FROM evento e
             JOIN aluno a ON e.id_evento = a.responsavel_evento
             JOIN pessoa p ON a.id_pessoa = p.id_pessoa
@@ -42,7 +42,7 @@ class EventService {
                     conn.query('UPDATE evento SET cod_verificacao = ?, id_pessoa_verificacao = ?, dt_verificacao = now() WHERE id_evento = ?;', [random, id_pessoa, id_evento]);
                     return { status: 200, message: random };
                 } else {
-                    return { status: 200, message: evento.cod_verificacao };
+                    return { status: 200, message: `Código para validação:<br><br>${evento.cod_verificacao}` };
                 }
             } else {
                 return { status: 401, message: 'Você não é responsável por este evento.' };
@@ -164,23 +164,34 @@ export default EventService;
 async function validationAllowed(conn: any, participatedPersonId: number, minForNext: number): Promise<boolean> {
     const { minLastParticipation } = await db.findFirst(
         conn,
-        `SELECT TIMESTAMPDIFF (
-            MINUTE, ( SELECT data_validacao 
-            FROM etecdeem_fatecweek.participacoes 
-            WHERE id_pessoa_participante = ${participatedPersonId}
-            ORDER BY data_validacao DESC LIMIT 1
-            )
-            + INTERVAL TIMESTAMPDIFF( HOUR, (
-            SELECT data_validacao 
-            FROM etecdeem_fatecweek.participacoes 
-            WHERE id_pessoa_participante = ${participatedPersonId}
-            ORDER BY data_validacao DESC 
-            LIMIT 1
-            ),
-            (
-             SELECT current_timestamp()
-            )) HOUR, (SELECT current_timestamp() LIMIT 1)) AS minLastParticipation
-            FROM participacoes LIMIT 1;`,
+
+        `SELECT TIMESTAMPDIFF(
+            MINUTE,
+            ( SELECT data_validacao 
+                FROM etecdeem_fatecweek.participacoes 
+                WHERE id_pessoa_participante = ${participatedPersonId}
+                ORDER BY data_validacao DESC LIMIT 1
+                ),
+            now()) + 1 AS minLastParticipation;`,
+
+
+        // `SELECT TIMESTAMPDIFF (
+        //     MINUTE, ( SELECT data_validacao 
+        //     FROM etecdeem_fatecweek.participacoes 
+        //     WHERE id_pessoa_participante = ${participatedPersonId}
+        //     ORDER BY data_validacao DESC LIMIT 1
+        //     )
+        //     + INTERVAL TIMESTAMPDIFF( HOUR, (
+        //     SELECT data_validacao 
+        //     FROM etecdeem_fatecweek.participacoes 
+        //     WHERE id_pessoa_participante = ${participatedPersonId}
+        //     ORDER BY data_validacao DESC 
+        //     LIMIT 1
+        //     ),
+        //     (
+        //      SELECT current_timestamp()
+        //     )) HOUR, (SELECT current_timestamp() LIMIT 1)) AS minLastParticipation
+        //     FROM participacoes LIMIT 1;`,
         []);
 
     if (minLastParticipation !== null && minLastParticipation <= minForNext) {
