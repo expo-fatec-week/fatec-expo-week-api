@@ -26,3 +26,11 @@ export interface QueryLoginVisitor {
     telefone: string;
     email: string;
 }
+
+export interface Administrador {
+    id: number;
+    nome: string;
+    email: string;
+    senha: string;
+    dtcria: string;
+}

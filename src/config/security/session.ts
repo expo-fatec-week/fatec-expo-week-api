@@ -11,11 +11,27 @@ class Session {
         return 0;
     }
 
-    static organizer = (middleware: any) => {
+    static admin = (middleware: any) => {
+        const allowedRole = 'ADMINISTRADOR';
         return async (req: any, res: any, next: any) => {
             if (req.headers.authorization) {
                 const userRequest: any = jwt.decode(req.headers.authorization?.split('Bearer ')[1]);
-                const allowedRoles = [EnumTipoAluno.ORGANIZADOR];
+
+                if (allowedRole === userRequest.userType.toUpperCase()) {
+                    middleware(req, res, next);
+                } else {
+                    res.status(403).send('Usuário não tem permissão para acessar esse recurso.');
+                }
+            }
+        };
+    };
+
+    static organizer = (middleware: any) => {
+        const adminRole = 'ADMINISTRADOR';
+        return async (req: any, res: any, next: any) => {
+            if (req.headers.authorization) {
+                const userRequest: any = jwt.decode(req.headers.authorization?.split('Bearer ')[1]);
+                const allowedRoles = [EnumTipoAluno.ORGANIZADOR, adminRole];
 
                 if (allowedRoles.indexOf(userRequest.userType.toUpperCase()) !== -1) {
                     middleware(req, res, next);
@@ -27,10 +43,11 @@ class Session {
     };
 
     static exhibitor = (middleware: any) => {
+        const adminRole = 'ADMINISTRADOR';
         return async (req: any, res: any, next: any) => {
             if (req.headers.authorization) {
                 const userRequest: any = jwt.decode(req.headers.authorization?.split('Bearer ')[1]);
-                const allowedRoles = [EnumTipoAluno.ORGANIZADOR, EnumTipoAluno.EXPOSITOR];
+                const allowedRoles = [adminRole, EnumTipoAluno.ORGANIZADOR, EnumTipoAluno.EXPOSITOR];
 
                 if (allowedRoles.indexOf(userRequest.userType.toUpperCase()) !== -1) {
                     middleware(req, res, next);

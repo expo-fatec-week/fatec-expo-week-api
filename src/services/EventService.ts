@@ -120,7 +120,7 @@ class EventService {
     static async validateExhibit(requestValidateExhibit: RequestValidateExhibit) {
         const conn = await db.connect();
         try {
-            const minForNext = 15;
+            const minForNext = 10;
             const isResponsable = await db.findFirst(
                 conn,
                 `SELECT id_pessoa, responsavel_evento FROM aluno WHERE responsavel_evento = ? AND id_pessoa = ?;`,
@@ -182,24 +182,6 @@ async function validationAllowed(conn: any, participatedPersonId: number, minFor
                 ),
             now()) + 1 AS minLastParticipation;`,
 
-
-        // `SELECT TIMESTAMPDIFF (
-        //     MINUTE, ( SELECT data_validacao 
-        //     FROM etecdeem_fatecweek.participacoes 
-        //     WHERE id_pessoa_participante = ${participatedPersonId}
-        //     ORDER BY data_validacao DESC LIMIT 1
-        //     )
-        //     + INTERVAL TIMESTAMPDIFF( HOUR, (
-        //     SELECT data_validacao 
-        //     FROM etecdeem_fatecweek.participacoes 
-        //     WHERE id_pessoa_participante = ${participatedPersonId}
-        //     ORDER BY data_validacao DESC 
-        //     LIMIT 1
-        //     ),
-        //     (
-        //      SELECT current_timestamp()
-        //     )) HOUR, (SELECT current_timestamp() LIMIT 1)) AS minLastParticipation
-        //     FROM participacoes LIMIT 1;`,
         []);
 
     if (minLastParticipation !== null && minLastParticipation <= minForNext) {
