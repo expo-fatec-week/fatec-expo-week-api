@@ -93,12 +93,7 @@ class EventService {
 
                         if (isAllowed) {
                             await conn.query(
-                                `INSERT INTO participacoes (id_evento, id_pessoa_participante, id_pessoa_validacao, data_validacao) 
-                            VALUES (
-                                ${eventByValidateCode.id_evento}, 
-                                ${requestValidateLecture.id_pessoa}, 
-                                ${requestValidateLecture.id_pessoa}, 
-                                now());`
+                                `CALL p_add_presenca_aluno(${eventByValidateCode.id_evento}, ${requestValidateLecture.id_pessoa}, ${requestValidateLecture.id_pessoa});`
                             );
                             return { status: 200, message: 'Presença confirmada com sucesso.' }
                         }
@@ -144,12 +139,7 @@ class EventService {
 
                 if (isAllowed) {
                     await conn.query(
-                        `INSERT INTO participacoes (id_evento, id_pessoa_participante, id_pessoa_validacao, data_validacao) 
-                    VALUES (
-                        ${requestValidateExhibit.id_evento}, 
-                        ${requestValidateExhibit.id_pessoa_participante}, 
-                        ${requestValidateExhibit.id_pessoa_validacao}, 
-                        now());`
+                        `CALL p_add_presenca_aluno(${requestValidateExhibit.id_evento}, ${requestValidateExhibit.id_pessoa_participante}, ${requestValidateExhibit.id_pessoa_validacao});`
                     );
                     return { status: 200, message: 'Presença confirmada com sucesso.' };
                 } else {

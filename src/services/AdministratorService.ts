@@ -1,6 +1,8 @@
 import db from '../config/database/database';
 import bcrypt from 'bcrypt';
 import { Administrador } from '../models/Login';
+import { Cursos } from '../models/Entities';
+import { StudentByCourse } from '../models/Student';
 
 class AdministratorService {
 
@@ -26,7 +28,29 @@ class AdministratorService {
         } finally {
             conn.end();
         }
+    }
 
+    static async listCourses() {
+        const conn = await db.connect();
+        const courses: Cursos[] = await db.findMany(conn, 'SELECT * FROM cursos;');
+        conn.end();
+
+        if (courses.length > 0) {
+            return { status: 200, courses }
+        }
+        return { status: 400, message: 'Não existem cursos cadastrados.' }
+    }
+
+    static async listStudentsWithEventsParticipatedByCourses(courseId: number) {
+        const conn = await db.connect();
+        const students: StudentByCourse[] = await db.findMany(conn, 'SELECT * FROM vw_aluno_eventos_por_curso WHERE curso = ?', [courseId]);
+        console.log(students)
+        conn.end();
+
+        if (students.length > 0) {
+            return { status: 200, students }
+        }
+        return { status: 400, message: 'Nenhum aluno deste curso participou do evento.' }
     }
 
 }

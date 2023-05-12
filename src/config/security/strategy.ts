@@ -18,10 +18,11 @@ passport.use(
         try {
             let user: QueryLoginStudent | QueryLoginVisitor | Administrador;
             const conn = await db.connect();
+
             if (_payload.ra) {
                 user = await db.findFirst(conn, 'SELECT * FROM vw_aluno_info WHERE ra = ? AND email = ?', [_payload.ra, _payload.email]);
-            } else if (_payload.senha) {
-                user = await db.findFirst(conn, 'SELECT * FROM administradores WHERE email = ? AND senha = ?', [_payload.email, _payload.senha]);
+            } else if (!_payload.personId) {
+                user = await db.findFirst(conn, 'SELECT * FROM administradores WHERE email = ?', [_payload.email]);
             } else {
                 user = await db.findFirst(conn, 'SELECT * FROM vw_visitante_info WHERE id_pessoa = ? AND email = ?', [_payload.personId, _payload.email])
             }

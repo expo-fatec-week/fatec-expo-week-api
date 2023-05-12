@@ -11,19 +11,29 @@ class AdministratorController {
             }
 
             const response = await AdministratorService.update(email, oldPassword, newPassword);
-
             return res.status(response.status).json(response.message);
         } catch (error) {
             return res.status(500).json(error);
         }
-    };
-
-    static async listCourses(req: Request, res: Response) {
-        console.log('passou para cursos')
     }
 
-    static async listStudentsWithEventsParticipatedByCourses() {
-        console.log('passou alunos por cursos')
+    static async listCourses(req: Request, res: Response) {
+        try {
+            const response = await AdministratorService.listCourses();
+            return res.status(response.status).json(response.courses ?? response.message);
+        } catch (error) {
+            return res.status(500).json(error);
+        }
+    }
+
+    static async listStudentsWithEventsParticipatedByCourses(req: Request, res: Response) {
+        const { courseId } = req.params;
+        try {
+            const response = await AdministratorService.listStudentsWithEventsParticipatedByCourses(Number(courseId));
+            return res.status(response.status).json(response.students ?? response.message);
+        } catch (error) {
+            return res.status(500).json(error);
+        }
     }
 
 }

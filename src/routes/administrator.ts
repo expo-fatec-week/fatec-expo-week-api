@@ -10,9 +10,11 @@ admin.route('/administration/update')
     .post(Session.admin(AdministratorController.update));
 
 admin.route('/administration/courses')
+    .all(authStrategy())
     .get(Session.admin(AdministratorController.listCourses));
 
-admin.route('/administration/students-with-events')
+admin.route('/administration/courses/:courseId/students-with-events')
+    .all(authStrategy())
     .get(Session.admin(AdministratorController.listStudentsWithEventsParticipatedByCourses));
 
 export default admin;

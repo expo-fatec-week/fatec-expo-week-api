@@ -8,3 +8,11 @@ export interface Student {
     email: string;
     tipo: string;
 }
+
+export interface StudentByCourse {
+    ra: string;
+    id_pessoa: number;
+    nome: string;
+    curso: number;
+    qtd_eventos_participados: number;
+}
