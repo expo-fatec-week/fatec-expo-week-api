@@ -3,25 +3,32 @@ import bcrypt from 'bcrypt';
 import { Administrador } from '../models/Login';
 import { Cursos } from '../models/Entities';
 import { StudentByCourse } from '../models/Student';
+import { ResponseVisitor } from '../models/Visitor';
 
 class AdministratorService {
 
-    static async update(email: string, oldPassword: string, newPassword: string) {
+    static async update(email: string, password: string, newPassword: string) {
         const conn = await db.connect();
         try {
-            const user: Administrador = await db.findFirst(conn, 'SELECT * FROM administradores WHERE email = ? AND senha = ?', [email, oldPassword]);
+            const user: Administrador = await db.findFirst(conn, 'SELECT * FROM administradores WHERE email = ?;', [email]);
 
             if (user) {
-                const salt = bcrypt.genSaltSync(12);
-                const currentPassword = bcrypt.hashSync(newPassword, salt);
+                const validPassword = bcrypt.compareSync(password, user.senha);
 
-                await db.executeQuery(conn, 'UPDATE administradores SET senha = ? WHERE email = ?', [currentPassword, email])
+                if (validPassword) {
 
-                return { status: 200, message: 'Usuário atualizado com sucesso!' }
+                    const salt = bcrypt.genSaltSync(12);
+                    const currentPassword = bcrypt.hashSync(newPassword, salt);
+
+                    await db.executeQuery(conn, 'UPDATE administradores SET senha = ? WHERE email = ?', [currentPassword, email])
+
+                    return { status: 200, message: 'Senha atualizada com sucesso!' }
+                }
+                return { status: 400, message: 'Senha antiga invalida.' }
+
             }
 
             return { status: 400, message: 'Usuário não encontrado' }
-
 
         } catch (error) {
             return { status: 500, message: error }
@@ -38,7 +45,7 @@ class AdministratorService {
         if (courses.length > 0) {
             return { status: 200, courses }
         }
-        return { status: 400, message: 'Não existem cursos cadastrados.' }
+        return { status: 204, message: 'Não existem cursos cadastrados.' }
     }
 
     static async listStudentsWithEventsParticipatedByCourses(courseId: number) {
@@ -50,7 +57,18 @@ class AdministratorService {
         if (students.length > 0) {
             return { status: 200, students }
         }
-        return { status: 400, message: 'Nenhum aluno deste curso participou do evento.' }
+        return { status: 204, message: 'Nenhum aluno deste curso participou do evento.' }
+    }
+
+    static async listVisitors() {
+        const conn = await db.connect();
+        const visitors: ResponseVisitor[] = await db.findMany(conn, 'SELECT * FROM vw_visitante_info;');
+        conn.end();
+
+        if (visitors.length > 0) {
+            return { status: 200, visitors }
+        }
+        return { status: 204, message: 'Não existem visitantes cadastrados.' }
     }
 
 }

@@ -5,13 +5,13 @@ import { Administrador } from '../models/Login';
 
 class AuthService {
 
-    static async sigIn(email: string, senha: string) {
+    static async sigIn(email: string, password: string) {
         const conn = await db.connect();
         const user: Administrador = await db.findFirst(conn, 'SELECT * FROM administradores WHERE email = ?;', [email]);
         conn.end();
 
         if (user) {
-            const validPassword = bcrypt.compareSync(senha, user.senha);
+            const validPassword = bcrypt.compareSync(password, user.senha);
 
             if (validPassword) {
                 const now = Math.floor(Date.now() / 1000);

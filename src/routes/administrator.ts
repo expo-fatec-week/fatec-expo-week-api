@@ -6,8 +6,11 @@ import AdministratorController from '../controllers/AdministratorController';
 const admin = Router();
 
 admin.route('/administration/update')
+    .put(AdministratorController.update);
+
+admin.route('/administration/visitors')
     .all(authStrategy())
-    .post(Session.admin(AdministratorController.update));
+    .get(Session.admin(AdministratorController.listVisitors));
 
 admin.route('/administration/courses')
     .all(authStrategy())
