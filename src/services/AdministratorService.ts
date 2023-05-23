@@ -51,7 +51,6 @@ class AdministratorService {
     static async listStudentsWithEventsParticipatedByCourses(courseId: number) {
         const conn = await db.connect();
         const students: StudentByCourse[] = await db.findMany(conn, 'SELECT * FROM vw_aluno_eventos_por_curso WHERE curso = ?', [courseId]);
-        console.log(students)
         conn.end();
 
         if (students.length > 0) {
