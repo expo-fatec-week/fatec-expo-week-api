@@ -27,6 +27,8 @@ passport.use(
                 user = await db.findFirst(conn, 'SELECT * FROM vw_visitante_info WHERE id_pessoa = ? AND email = ?', [_payload.personId, _payload.email])
             }
 
+            conn.end();
+
             verifyUser(user);
 
             done(null, user);
