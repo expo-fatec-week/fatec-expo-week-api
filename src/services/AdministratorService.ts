@@ -50,11 +50,35 @@ class AdministratorService {
 
     static async listStudentsWithEventsParticipatedByCourses(courseId: number) {
         const conn = await db.connect();
-        const students: StudentByCourse[] = await db.findMany(conn, 'SELECT * FROM vw_aluno_eventos_por_curso WHERE curso = ?', [courseId]);
+        const baseStudents: StudentByCourse[] = await db.findMany(conn,
+            `SELECT DISTINCT a.ra, a.id_pessoa, p.nome, a.curso, e.id_evento
+        FROM aluno a
+        JOIN pessoa p ON a.id_pessoa = p.id_pessoa
+        JOIN participacoes pa ON a.id_pessoa = pa.id_pessoa_participante
+        JOIN evento e ON pa.id_evento = e.id_evento WHERE curso = ?`, [courseId]);
         conn.end();
 
-        if (students.length > 0) {
-            return { status: 200, students }
+        let students: StudentByCourse[] = [];
+        const setAluno = new Set();
+        baseStudents.forEach((aluno) => {
+            delete aluno.id_evento;
+            let qtdEventos = 0;
+            baseStudents.forEach((alunoInterno) => {
+                if (alunoInterno.id_pessoa === aluno.id_pessoa) {
+                    qtdEventos++;
+                }
+            });
+            students.push({ ...aluno, qtd_eventos_participados: qtdEventos });
+        });
+
+        let filteredStudents: any[] = students.filter((aluno)=> {
+            const alunoDuplicado = setAluno.has(aluno.id_pessoa);
+            setAluno.add(aluno.id_pessoa);
+            return!alunoDuplicado;
+        });
+
+        if (baseStudents.length > 0) {
+            return { status: 200, students: filteredStudents }
         }
         return { status: 204, message: 'Nenhum aluno deste curso participou do evento.' }
     }
@@ -68,6 +92,14 @@ class AdministratorService {
             return { status: 200, visitors }
         }
         return { status: 204, message: 'Não existem visitantes cadastrados.' }
+    }
+
+    static async listDetailsParticipatedByCourse() {
+        return { status: 200, message: 'Listando detalhes dos eventos participados por curso.' };
+    }
+
+    static async listDetailsParticipatedByPerson() {
+        return { status: 200, message: 'Listando detalhes dos eventos participados por pessoa.' };
     }
 
 }

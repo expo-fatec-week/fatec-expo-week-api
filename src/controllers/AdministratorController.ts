@@ -45,6 +45,24 @@ class AdministratorController {
         }
     }
 
+    static async listDetailsParticipatedByCourse(req: Request, res: Response) {
+        try {
+            const response = await AdministratorService.listDetailsParticipatedByCourse();
+            return res.status(response.status).json(response.message);
+        } catch (error) {
+            return res.status(500).json(error);
+        }
+    }
+
+    static async listDetailsParticipatedByPerson(req: Request, res: Response) {
+        try {
+            const response = await AdministratorService.listDetailsParticipatedByPerson();
+            return res.status(response.status).json(response.message);
+        } catch (error) {
+            return res.status(500).json(error);
+        }
+    }
+
 }
 
 export default AdministratorController;

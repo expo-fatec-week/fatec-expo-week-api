@@ -14,5 +14,6 @@ export interface StudentByCourse {
     id_pessoa: number;
     nome: string;
     curso: number;
-    qtd_eventos_participados: number;
+    id_evento?: number;
+    qtd_eventos_participados?: number;
 }
