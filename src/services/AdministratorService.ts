@@ -115,7 +115,7 @@ class AdministratorService {
             });
 
             const studentsWithEvents: StudentByCourseWithEvents[] = await db.findMany(conn,
-                `SELECT a.ra, p.nome, p.email, e.descricao, e.tipo, e.data_evento
+                `SELECT DISTINCT a.ra, p.nome, p.email, e.descricao, e.tipo, e.data_evento
                 FROM evento e
                 JOIN participacoes b ON e.id_evento = b.id_evento
                 JOIN pessoa p ON b.id_pessoa_participante = p.id_pessoa
