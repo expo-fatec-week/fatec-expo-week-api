@@ -4,6 +4,7 @@ import { Administrador } from '../models/Login';
 import { Cursos } from '../models/Entities';
 import { StudentByCourse } from '../models/Student';
 import { ResponseVisitor } from '../models/Visitor';
+import { ResponseEvent } from '../models/Event';
 
 class AdministratorService {
 
@@ -60,21 +61,21 @@ class AdministratorService {
 
         let students: StudentByCourse[] = [];
         const setAluno = new Set();
-        baseStudents.forEach((aluno) => {
-            delete aluno.id_evento;
+        baseStudents.forEach((student) => {
+            delete student.id_evento;
             let qtdEventos = 0;
             baseStudents.forEach((alunoInterno) => {
-                if (alunoInterno.id_pessoa === aluno.id_pessoa) {
+                if (alunoInterno.id_pessoa === student.id_pessoa) {
                     qtdEventos++;
                 }
             });
-            students.push({ ...aluno, qtd_eventos_participados: qtdEventos });
+            students.push({ ...student, qtd_eventos_participados: qtdEventos });
         });
 
-        let filteredStudents: any[] = students.filter((aluno)=> {
-            const alunoDuplicado = setAluno.has(aluno.id_pessoa);
-            setAluno.add(aluno.id_pessoa);
-            return!alunoDuplicado;
+        let filteredStudents: any[] = students.filter((student) => {
+            const alunoDuplicado = setAluno.has(student.id_pessoa);
+            setAluno.add(student.id_pessoa);
+            return !alunoDuplicado;
         });
 
         if (baseStudents.length > 0) {
@@ -94,12 +95,52 @@ class AdministratorService {
         return { status: 204, message: 'Não existem visitantes cadastrados.' }
     }
 
-    static async listDetailsParticipatedByCourse() {
-        return { status: 200, message: 'Listando detalhes dos eventos participados por curso.' };
+    static async listDetailsParticipatedByCourse(courseId: string) {
+        const conn = await db.connect();
+        try {
+            // const students: StudentByCourse[] = await db.findMany(conn, 'SELECT * FROM vw_aluno_eventos_por_curso WHERE curso = ?', [courseId]);
+            const students: StudentByCourse[] = await db.findMany(conn,
+                `SELECT DISTINCT a.ra, a.id_pessoa, p.nome, a.curso
+                FROM aluno a
+                JOIN pessoa p ON a.id_pessoa = p.id_pessoa
+                JOIN participacoes pa ON a.id_pessoa = pa.id_pessoa_participante
+                JOIN evento e ON pa.id_evento = e.id_evento
+                WHERE curso = ?;`
+                , [courseId]);
+
+            let idPeople: number[] = [];
+
+            students.forEach((student) => {
+                idPeople.push(student.id_pessoa);
+            });
+
+            const studentsWithEvents = await db.findMany(conn,
+                `SELECT a.ra, p.nome, p.email, e.descricao, e.tipo, e.data_evento
+                FROM evento e
+                JOIN participacoes b ON e.id_evento = b.id_evento
+                JOIN pessoa p ON b.id_pessoa_participante = p.id_pessoa
+                JOIN aluno a ON a.id_pessoa = p.id_pessoa
+                WHERE b.id_pessoa_participante IN (?);`,
+                [idPeople]);
+
+            return studentsWithEvents;
+        } catch (error) {
+            return { status: 500, message: error }
+        } finally {
+            conn.end();
+        }
     }
 
-    static async listDetailsParticipatedByPerson() {
-        return { status: 200, message: 'Listando detalhes dos eventos participados por pessoa.' };
+    static async listDetailsParticipatedByPerson(personId: string) {
+        const conn = await db.connect();
+        const events: ResponseEvent[] = await db.findMany(conn,
+            `SELECT DISTINCT e.id_evento, e.descricao, e.tipo, e.local, e.data_evento, e.dt_verificacao 
+            FROM evento e
+            JOIN participacoes p ON e.id_evento = p.id_evento
+            WHERE id_pessoa_participante = ?;`,
+            [personId]);
+        conn.end();
+        return { status: 200, events };
     }
 
 }

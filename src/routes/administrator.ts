@@ -20,4 +20,12 @@ admin.route('/administration/courses/:courseId/students-with-events')
     .all(authStrategy())
     .get(Session.admin(AdministratorController.listStudentsWithEventsParticipatedByCourses));
 
+admin.route('/administration/courses/:courseId/events-participated')
+    .all(authStrategy())
+    .get(Session.admin(AdministratorController.listDetailsParticipatedByCourse));
+
+admin.route('/administration/person/:personId/events-participated')
+    .all(authStrategy())
+    .get(Session.admin(AdministratorController.listDetailsParticipatedByPerson));
+
 export default admin;
