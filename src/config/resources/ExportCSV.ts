@@ -8,7 +8,7 @@ class ExportCSV {
         const csv = json2csv.parse(data);
         res.header('Content-Type', 'text/csv');
         res.attachment(fileName + '.csv');
-        return res.status(206).send(csv);
+        return res.status(206).json(csv);
     }
 
 }

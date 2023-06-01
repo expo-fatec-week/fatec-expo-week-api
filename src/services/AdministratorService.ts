@@ -2,7 +2,7 @@ import db from '../config/database/database';
 import bcrypt from 'bcrypt';
 import { Administrador } from '../models/Login';
 import { Cursos } from '../models/Entities';
-import { StudentByCourse } from '../models/Student';
+import { StudentByCourse, StudentByCourseWithEvents } from '../models/Student';
 import { ResponseVisitor } from '../models/Visitor';
 import { ResponseEvent } from '../models/Event';
 
@@ -114,7 +114,7 @@ class AdministratorService {
                 idPeople.push(student.id_pessoa);
             });
 
-            const studentsWithEvents = await db.findMany(conn,
+            const studentsWithEvents: StudentByCourseWithEvents[] = await db.findMany(conn,
                 `SELECT a.ra, p.nome, p.email, e.descricao, e.tipo, e.data_evento
                 FROM evento e
                 JOIN participacoes b ON e.id_evento = b.id_evento
@@ -123,7 +123,24 @@ class AdministratorService {
                 WHERE b.id_pessoa_participante IN (?);`,
                 [idPeople]);
 
-            return studentsWithEvents;
+            const response = studentsWithEvents.map((student) => {
+                const currentDate = new Date(student.data_evento.toString().replace(/-/g, '/').replace(/z/g, '')).toISOString();
+                const dd = currentDate.toString().substr(8, 2);
+                const MM = currentDate.toString().substr(5, 2);
+                const yyyy = currentDate.toString().substr(0, 4);
+                const date = `${dd}/${MM}/${yyyy}`;
+
+                const hh = currentDate.substr(11, 2);
+                const mm = currentDate.substr(14, 2);
+                const ss = currentDate.substr(17, 2);
+                const time = `${hh}:${mm}:${ss}`;
+
+                const data = `${date} ${time}`;
+
+                return { ...student, data_evento: data }
+            });
+
+            return response;
         } catch (error) {
             return { status: 500, message: error }
         } finally {

@@ -17,3 +17,12 @@ export interface StudentByCourse {
     id_evento?: number;
     qtd_eventos_participados?: number;
 }
+
+export interface StudentByCourseWithEvents {
+    ra: string;
+    nome: string;
+    email: string;
+    descricao_evento: string;
+    tipo_evento: string;
+    data_evento: string;
+}
