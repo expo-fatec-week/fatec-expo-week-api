@@ -8,6 +8,9 @@
     "build": "tsup src",
     "start": "node dist/server.js"
   },
+  "engines": {
+    "node": "16.14.0"
+  }
   "keywords": [],
   "author": "",
   "license": "ISC",
