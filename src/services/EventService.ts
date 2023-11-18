@@ -115,7 +115,7 @@ class EventService {
     static async validateExhibit(requestValidateExhibit: RequestValidateExhibit) {
         const conn = await db.connect();
         try {
-            const minForNext = 10;
+            const minForNext = 2;
             const isResponsable = await db.findFirst(
                 conn,
                 `SELECT id_pessoa, responsavel_evento FROM aluno WHERE responsavel_evento = ? AND id_pessoa = ?;`,
